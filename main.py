@@ -5,7 +5,6 @@ import dill
 import plotly.graph_objects as go
 from src.preprocessing import preprocess_single_transaction
 from src.visualization import create_confusion_matrix_plot, create_feature_importance_plot
-from models.tree_models import DecisionTree, RandomForest
 
 st.set_page_config(
     page_title="Fraud Detection System",
@@ -13,7 +12,6 @@ st.set_page_config(
     layout="wide"
 )
 
-# Load models and feature names
 @st.cache_resource
 def load_models():
     with open('models/random_forest_model.pkl', 'rb') as f:
@@ -26,20 +24,17 @@ def load_models():
 
 rf_model, dt_model, feature_names = load_models()
 
-# App title and description
 st.title('Fraud Detection System')
 st.markdown("""
 This application uses machine learning to detect fraudulent transactions based on various features.
 The models used are Decision Tree and Random Forest classifiers.
 """)
 
-# Create tabs
 tab1, tab2 = st.tabs(["Predict Single Transaction", "Model Information"])
 
 with tab1:
     st.header("Transaction Details")
     
-    # Input form
     col1, col2 = st.columns(2)
     
     with col1:
@@ -68,14 +63,11 @@ with tab1:
     }
     
     if st.button("Predict"):
-        # Preprocess data
         X = preprocess_single_transaction(transaction_data, feature_names)
         
-        # Make predictions
         dt_pred = dt_model.predict(X)[0]
         rf_pred = rf_model.predict(X)[0]
         
-        # Show results
         col1, col2 = st.columns(2)
         
         with col1:
@@ -104,7 +96,6 @@ with tab2:
     The following plots show which features are most important for making predictions:
     """)
     
-    # Show feature importance plots
     st.plotly_chart(
         create_feature_importance_plot(
             dt_model.feature_importances_,
