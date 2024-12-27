@@ -5,4 +5,4 @@ numpy>=1.24.3
 pandas>=1.5.3
 plotly==5.15.0
 dill
-pillow==10.0.0
+pillow<10.0.0
