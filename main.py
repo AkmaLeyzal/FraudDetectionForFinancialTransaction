@@ -3,8 +3,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import dill
-import joblib
-from collections import Counter
 from src.preprocessing import TransactionPreprocessor
 from src.visualization import ModelVisualizer
 from src.model_evaluation import ModelEvaluator, display_model_evaluation
@@ -50,7 +48,6 @@ tab1, tab2, tab3 = st.tabs(["Transaction Analysis", "Model Performance", "Model 
 with tab1:
     st.header("Transaction Details")
     
-    # Create two columns for input fields
     col1, col2 = st.columns(2)
     
     with col1:
@@ -67,7 +64,6 @@ with tab1:
         new_balance_dest = st.number_input("Destination Account New Balance", min_value=0.0, format="%.2f")
         is_merchant = st.checkbox("Destination is Merchant")
         
-    # Create transaction data dictionary
     transaction_data = {
         'type': transaction_type,
         'amount': amount,
@@ -80,14 +76,11 @@ with tab1:
     
     if st.button("Analyze Transaction"):
         try:
-            # Preprocess transaction
             X = preprocessor.transform_single(transaction_data)
             
-            # Make predictions
             dt_pred = dt_model.predict(X)[0] if dt_model else None
             rf_pred = rf_model.predict(X)[0] if rf_model else None
             
-            # Display results
             st.subheader("Analysis Results")
             col1, col2 = st.columns(2)
             
@@ -111,15 +104,12 @@ with tab1:
                 else:
                     st.warning("Model not available")
             
-            # Add transaction details
             st.markdown("#### Transaction Risk Factors")
             risk_factors = []
             
-            # Check amount
             if amount > 100_000_000:
                 risk_factors.append("High transaction amount")
             
-            # Check balance changes
             if abs(old_balance_orig - new_balance_orig) != amount:
                 risk_factors.append("Balance change mismatch")
             
@@ -139,12 +129,10 @@ with tab2:
     if test_data is not None:
         X_test, y_test = test_data['X'], test_data['y']
         
-        # Decision Tree Evaluation
         if dt_model is not None:
             display_model_evaluation(dt_model, X_test, y_test, "Decision Tree")
             
         st.markdown("---")
-        # Random Forest Evaluation
         if rf_model is not None:
             display_model_evaluation(rf_model, X_test, y_test, "Random Forest")
     else:
@@ -169,7 +157,6 @@ with tab3:
     
     st.markdown("### Feature Importance")
     try:
-        # Get feature names
         feature_names = preprocessor.feature_names
         
         if dt_model and hasattr(dt_model, 'feature_importances_'):
@@ -195,7 +182,6 @@ with tab3:
     except Exception as e:
         st.error(f"Error displaying feature importance: {str(e)}")
         
-    # Add model performance metrics if available
     st.markdown("### Model Performance")
     st.info("""
     The models were trained on a dataset of financial transactions with the following characteristics:
@@ -227,6 +213,6 @@ The dataset used for training the models is a subset of a larger dataset of fina
 Special thanks to Akmal Rizal, Reva Deshinta Isyana, and Yasyifa Sastiya Nabali for their contributions to this project.
 
 ### Contact
-For any inquiries or feedback, please contact our email akmal.23078@gmhs.unesa.ac.id""")
+For any inquiries or feedback, please contact our email akmal.23078@mhs.unesa.ac.id""")
 
 
