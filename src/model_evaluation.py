@@ -60,7 +60,7 @@ def display_model_evaluation(model, X_test, y_test, model_name):
         import pandas as pd
         import os
         print("Current working directory:", os.getcwd())
-        model = pd.read_csv('FraudDetectionForFinancialTransaction/src/rf_pred.csv')
+        model = pd.read_csv('/mount/src/frauddetectionforfinancialtransaction/src/rf_pred.csv')
         model = model.values.tolist()
         metrics = evaluator.evaluate_model(y_test, model, y_prob=None)
 
