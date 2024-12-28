@@ -84,6 +84,7 @@ with tab1:
             else:
                 st.success("✅ Legitimate Transaction")
 
+# In the "Model Information" tab section:
 with tab2:
     st.header("Model Information")
     
@@ -96,21 +97,31 @@ with tab2:
     The following plots show which features are most important for making predictions:
     """)
     
-    st.plotly_chart(
-        create_feature_importance_plot(
-            dt_model.feature_importances_,
-            feature_names,
-            "Decision Tree - Feature Importance"
-        )
-    )
-    
-    st.plotly_chart(
-        create_feature_importance_plot(
-            rf_model.feature_importances_,
-            feature_names,
-            "Random Forest - Feature Importance"
-        )
-    )
+    try:
+        # Show Decision Tree feature importance
+        if hasattr(dt_model, 'feature_importances_') and len(dt_model.feature_importances_) == len(feature_names):
+            dt_plot = create_feature_importance_plot(
+                dt_model.feature_importances_,
+                feature_names,
+                "Decision Tree - Feature Importance"
+            )
+            st.plotly_chart(dt_plot, use_container_width=True)
+        else:
+            st.warning("Decision Tree feature importances not available")
+            
+        # Show Random Forest feature importance
+        if hasattr(rf_model, 'feature_importances_') and len(rf_model.feature_importances_) == len(feature_names):
+            rf_plot = create_feature_importance_plot(
+                rf_model.feature_importances_,
+                feature_names,
+                "Random Forest - Feature Importance"
+            )
+            st.plotly_chart(rf_plot, use_container_width=True)
+        else:
+            st.warning("Random Forest feature importances not available")
+            
+    except Exception as e:
+        st.error(f"Error creating feature importance plots: {str(e)}")
 
 st.sidebar.markdown("""
 ### About
