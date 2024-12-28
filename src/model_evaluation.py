@@ -58,7 +58,7 @@ evaluator = ModelEvaluator()
 def display_model_evaluation(model, X_test, y_test, model_name):
     if model_name == "Random Forest":
         import pandas as pd
-        model = pd.read_csv('//mount//src//frauddetectionforfinancialtransaction//src//rf_pred.csv')
+        model = pd.read_csv('src/rf_pred.csv')
         model = model.values.tolist()
         metrics = evaluator.evaluate_model(y_test, model, y_prob=None)
 
