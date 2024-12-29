@@ -20,7 +20,6 @@ st.set_page_config(
 
 @st.cache_resource
 def load_models():
-    """Load trained models"""
     try:
         with open('models/random_forest_model.pkl', 'rb') as f:
             rf_model = dill.load(f)
@@ -56,13 +55,12 @@ with tab1:
             ["CASH_OUT", "PAYMENT", "CASH_IN", "TRANSFER", "DEBIT"]
         )
         old_balance_orig = st.number_input("Origin Account Old Balance", min_value=0.0, format="%.2f")
-        new_balance_orig = st.number_input("Origin Account New Balance", min_value=0.0, format="%.2f")
+        old_balance_dest = st.number_input("Destination Account Old Balance", min_value=0.0, format="%.2f")
         is_merchant = st.checkbox("Destination is Merchant")
-        
     
     with col2:
         amount = st.number_input("Amount", min_value=0.0, format="%.2f")
-        old_balance_dest = st.number_input("Destination Account Old Balance", min_value=0.0, format="%.2f")
+        new_balance_orig = st.number_input("Origin Account New Balance", min_value=0.0, format="%.2f")
         new_balance_dest = st.number_input("Destination Account New Balance", min_value=0.0, format="%.2f")
         
     transaction_data = {
@@ -75,7 +73,7 @@ with tab1:
         'nameDest': 'M' if is_merchant else 'C'
     }
     
-    if st.button("Analyze Transaction"):
+    if st.button("Analyze Transaction", help="Click button to start analyze):
         try:
             X = preprocessor.transform_single(transaction_data)
             
