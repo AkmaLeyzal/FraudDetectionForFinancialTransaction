@@ -54,22 +54,22 @@ with tab1:
             "Transaction Type",
             ["CASH_OUT", "PAYMENT", "CASH_IN", "TRANSFER", "DEBIT"]
         )
-        old_balance_orig = st.number_input("Origin Account Old Balance", min_value=0.0, format="%.2f", step=25000.0)
-        old_balance_dest = st.number_input("Destination Account Old Balance", min_value=0.0, format="%.2f", step=25000.0)
+        old_balance_orig = st.number_input("Origin Account Old Balance", min_value=0, step=25000)
+        old_balance_dest = st.number_input("Destination Account Old Balance", min_value=0, step=25000)
         is_merchant = st.checkbox("Destination is Merchant")
     
     with col2:
-        amount = st.number_input("Amount", min_value=0.0, format="%.2f", step=25000.0)
-        new_balance_orig = st.number_input("Origin Account New Balance", min_value=0.0, format="%.2f", step=25000.0)
-        new_balance_dest = st.number_input("Destination Account New Balance", min_value=0.0, format="%.2f", step=25000.0)
+        amount = st.number_input("Amount", min_value=0, step=25000)
+        new_balance_orig = st.number_input("Origin Account New Balance", min_value=0, step=25000)
+        new_balance_dest = st.number_input("Destination Account New Balance", min_value=0, step=25000)
         
     transaction_data = {
         'type': transaction_type,
-        'amount': amount,
-        'oldbalanceOrg': old_balance_orig,
-        'newbalanceOrig': new_balance_orig,
-        'oldbalanceDest': old_balance_dest,
-        'newbalanceDest': new_balance_dest,
+        'amount': int(amount),
+        'oldbalanceOrg': int(old_balance_orig),
+        'newbalanceOrig': int(new_balance_orig),
+        'oldbalanceDest': int(old_balance_dest),
+        'newbalanceDest': int(new_balance_dest),
         'nameDest': 'M' if is_merchant else 'C'
     }
     
