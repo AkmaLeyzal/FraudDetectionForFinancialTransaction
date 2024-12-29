@@ -73,7 +73,7 @@ with tab1:
         'nameDest': 'M' if is_merchant else 'C'
     }
     
-    if st.button("Analyze Transaction", help="Click button to start analyze):
+    if st.button("Analyze Transaction", help="Click button to start analyze"):
         try:
             X = preprocessor.transform_single(transaction_data)
             
