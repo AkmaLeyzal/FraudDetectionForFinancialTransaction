@@ -6,3 +6,4 @@ pandas>=1.5.3
 plotly==5.15.0
 dill
 pillow
+joblib

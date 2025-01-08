@@ -3,6 +3,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import dill
+import joblib
 from src.preprocessing import TransactionPreprocessor
 from src.visualization import ModelVisualizer
 from src.model_evaluation import ModelEvaluator, display_model_evaluation
@@ -18,23 +19,25 @@ st.set_page_config(
     layout="wide"
 )
 
-@st.cache_resource
+# @st.cache_resource
 def load_models():
     try:
-        with open('models/random_forest_model.pkl', 'rb') as f:
-            rf_model = dill.load(f)
-        with open('models/decision_tree_model.pkl', 'rb') as f:
-            dt_model = dill.load(f)
-        with open('data/test_data.pkl', 'rb') as f:
-            test_data = dill.load(f)
+        with open('models/random_forest_model.joblib', 'rb') as f:
+            rf_model = joblib.load(f)
+        with open('models/decision_tree_model.joblib', 'rb') as f:
+            dt_model = joblib.load(f)
+        with open('data/test_data.joblib', 'rb') as f:
+            test_data = joblib.load(f)
+        with open('models/scaling.joblib', 'rb') as f:
+            scaling = joblib.load(f)
  
-        return rf_model, dt_model, test_data
-    
+        return rf_model, dt_model, test_data, scaling
+
     except Exception as e:
         st.error(f"Error loading models: {str(e)}")
-        return None, None, None
+        return None, None, None, None
 
-rf_model, dt_model, test_data = load_models()
+rf_model, dt_model, test_data, scaling = load_models()
 
 st.title('Fraud Detection System')
 st.markdown("""
@@ -62,6 +65,7 @@ with tab1:
         amount = st.number_input("Amount", min_value=0, step=25000)
         new_balance_orig = st.number_input("Origin Account New Balance", min_value=0, step=25000)
         new_balance_dest = st.number_input("Destination Account New Balance", min_value=0, step=25000)
+        step = st.number_input("Step", min_value=0, step=1, help="1 step = 1 hour in real time (complete transaction)") 
         
     transaction_data = {
         'type': transaction_type,
@@ -70,12 +74,13 @@ with tab1:
         'newbalanceOrig': int(new_balance_orig),
         'oldbalanceDest': int(old_balance_dest),
         'newbalanceDest': int(new_balance_dest),
-        'nameDest': 'M' if is_merchant else 'C'
+        'nameDest': 'M' if is_merchant else 'C',
+        'step': int(step)
     }
     
     if st.button("Analyze Transaction", help="Click button to start analyze"):
         try:
-            X = preprocessor.transform_single(transaction_data)
+            X = preprocessor.process_single_transaction(transaction_data, scaling)
             
             dt_pred = dt_model.predict(X)[0] if dt_model else None
             rf_pred = rf_model.predict(X)[0] if rf_model else None
@@ -157,12 +162,11 @@ with tab3:
     st.markdown("### Feature Importance")
     try:
         feature_names = preprocessor.feature_names
-        
         if dt_model and hasattr(dt_model, 'feature_importances_'):
             st.plotly_chart(
                 visualizer.create_feature_importance_plot(
                     dt_model.feature_importances_,
-                    feature_names,
+                    test_data['feature_names'],
                     "Decision Tree - Feature Importance"
                 ),
                 use_container_width=True
@@ -172,7 +176,7 @@ with tab3:
             st.plotly_chart(
                 visualizer.create_feature_importance_plot(
                     rf_model.feature_importances_,
-                    feature_names,
+                    test_data['feature_names'],
                     "Random Forest - Feature Importance"
                 ),
                 use_container_width=True
