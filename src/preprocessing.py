@@ -31,23 +31,7 @@ class TransactionPreprocessor:
         transaction: Dict[str, Union[str, float, int]],
         scaler
     ) -> np.ndarray:
-        """
-        Process a single transaction for fraud detection.
-        
-        Args:
-            transaction: Dictionary containing transaction data with keys:
-                - type: Transaction type (CASH_OUT, TRANSFER, etc.)
-                - amount: Transaction amount
-                - oldbalanceOrg: Original account's previous balance
-                - newbalanceOrig: Original account's new balance
-                - oldbalanceDest: Destination account's previous balance
-                - newbalanceDest: Destination account's new balance
-                - nameDest: Destination account name
-            scaler: Fitted StandardScaler for amount normalization
-            
-        Returns:
-            np.ndarray: Processed features ready for model prediction
-        """
+       
         # Convert single transaction to DataFrame for consistent processing
         df_single = pd.DataFrame([transaction])
         df_single = df_single.drop(['isFraud', 'isFlaggedFraud'], axis=1, errors='ignore')
@@ -84,7 +68,8 @@ class TransactionPreprocessor:
         # Balance ratios and patterns
         df_engineered['balance_ratio_orig'] = (df['newbalanceOrig'] + eps) / (df['oldbalanceOrg'] + eps)
         df_engineered['balance_ratio_dest'] = (df['newbalanceDest'] + eps) / (df['oldbalanceDest'] + eps)
-        
+        df_engineered['balance_mismatch'] = (abs(df['oldbalanceOrg'] - df['newbalanceOrig']) != df['amount']).astype(int)
+
         # Account emptying patterns
         df_engineered['orig_zero_after_tx'] = (df['newbalanceOrig'] == 0).astype(int)
         df_engineered['orig_zero_before_tx'] = (df['oldbalanceOrg'] == 0).astype(int)
@@ -131,7 +116,7 @@ class TransactionPreprocessor:
             (df_engineered['risk_score'] >= 3)  # Multiple risk factors
         ).astype(int)
 
-        df_engineered['fraud_pattern'] = (df['amount'] == df['oldbalanceOrg']).astype(int)
+        df_engineered['account_emptied_pattern'] = ((df['oldbalanceOrg'] > 0) & (df['newbalanceOrig'] == 0)).astype(int)
         
         # Drop unnecessary columns
         columns_to_drop = ['nameDest', 'nameOrig', 'isFlaggedFraud', 'type', 'step']
