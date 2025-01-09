@@ -19,7 +19,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# @st.cache_resource
+@st.cache_resource
 def load_models():
     try:
         with open('models/random_forest_model.joblib', 'rb') as f:

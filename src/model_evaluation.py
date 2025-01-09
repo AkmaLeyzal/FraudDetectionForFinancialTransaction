@@ -73,24 +73,24 @@ def display_model_evaluation(model, X_test, y_test, model_name):
         with col4:
             st.metric("F1 Score", f"{metrics['f1_score']:.5f}")
         
-        col1, col2 = st.columns(2)
+        # col1, col2 = st.columns(2)
         
-        with col1:
-            cm_plot = visualizer.create_confusion_matrix_plot(
-                metrics['confusion_matrix'],
-                f"{model_name} Confusion Matrix"
-            )
-            st.plotly_chart(cm_plot, use_container_width=True)
+        # with col1:
+        cm_plot = visualizer.create_confusion_matrix_plot(
+            metrics['confusion_matrix'],
+            f"{model_name} Confusion Matrix"
+        )
+        st.plotly_chart(cm_plot, use_container_width=True)
             
-        with col2:
-            if metrics['roc_data'] is not None:
-                roc_plot = visualizer.create_roc_curve_plot(
-                    metrics['roc_data']['fpr'],
-                    metrics['roc_data']['tpr'],
-                    metrics['auc_score'],
-                    f"{model_name} ROC Curve"
-                )
-                st.plotly_chart(roc_plot, use_container_width=True)
+        # with col2:
+        #     if metrics['roc_data'] is not None:
+        #         roc_plot = visualizer.create_roc_curve_plot(
+        #             metrics['roc_data']['fpr'],
+        #             metrics['roc_data']['tpr'],
+        #             metrics['auc_score'],
+        #             f"{model_name} ROC Curve"
+        #         )
+        #         st.plotly_chart(roc_plot, use_container_width=True)
                 
     except Exception as e:
         st.error(f"Error in model evaluation: {str(e)}")
