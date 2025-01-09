@@ -73,9 +73,9 @@ def display_model_evaluation(model, X_test, y_test, model_name):
         with col4:
             st.metric("F1 Score", f"{metrics['f1_score']:.5f}")
         
-        col1, col2, col3 = st.columns([1, 2, 1])
+        col1, col2 = st.columns([1, 1])
         
-        with col2:
+        with col1:
             cm_plot = visualizer.create_confusion_matrix_plot(
                 metrics['confusion_matrix'],
                 f"{model_name} Confusion Matrix"
